@@ -47,6 +47,7 @@ inquirer.prompt(QUESTIONS).then(respuestas => {
 
     if (!createProject(pathTarget)) return
     createDirectoriesFilesContent(templatePath, proyecto)
+    postProcess(templatePath, targetPath)
 })
 
 function createProject(projectPath) {
@@ -69,16 +70,17 @@ function createDirectoriesFilesContent(templatePath, projectName) {
 
     listFileDirectories.forEach(item => {
         const originalPath = path.join(templatePath, item)
-
         const stats = fs.statSync(originalPath)
-
         const writePath = path.join(DIR_ACTUAL, projectName, item)
 
         if (stats.isFile()) {
             let contents = fs.readFileSync(originalPath, 'utf-8')
-
             contents = render(contents, { projectName })
             fs.writeFileSync(writePath, contents, 'utf-8')
+            // Informacion adicional
+            const CREATE = chalk.green('CREATE ')
+            const SIZE = stats['size']
+            console.log(`${CREATE} ${originalPath} (${SIZE}) bytes`)
         } else if (stats.isDirectory()) {
             fs.mkdirSync(writePath)
             createDirectoriesFilesContent(
@@ -87,4 +89,19 @@ function createDirectoriesFilesContent(templatePath, projectName) {
             )
         }
     })
+}
+
+function postProcess(templatePath, targetPath) {
+    const isNode = fs.existsSync(path.join(templatePath, 'package.json'))
+
+    if (isNode) {
+        shell.cd(pathTarget)
+        console.log(
+            chalk.yellow(`Instalando las dependencias en ${targetPath}`)
+        )
+        const result = shell.exec('npm i')
+        if (result.code != 0) {
+            return false
+        }
+    }
 }
