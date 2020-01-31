@@ -1,0 +1,20 @@
+{
+  "name": "npm-ts",
+  "version": "1.0.0",
+  "description": "# Requirements * ... * ... * ...",
+  "main": "./dist/index.js",
+  "type": "./dist/index.d.ts",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha",
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "mocha": "7.0.1"
+  },
+  "author": "Jesus Jimenez Cordero <jesus_heaven117@outlook.com>",
+  "license": "MIT"
+}

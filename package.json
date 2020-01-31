@@ -1,0 +1,21 @@
+{
+  "name": "extra-node-cli-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "npm-cli-creator": "./index.js"
+  },
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "ejs": "^3.0.1",
+    "inquirer": "^7.0.4",
+    "shelljs": "^0.8.3"
+  }
+}
