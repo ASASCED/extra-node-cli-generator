@@ -7,6 +7,8 @@ const inquirer = require('inquirer')
 const shell = require('shelljs')
 const chalk = require('chalk')
 
+const render = require('./utils/template').render
+
 // Obtener las opciones de template
 
 const TEMPLATE_OPTIONS = fs.readdirSync(path.join(__dirname, 'templates'))
@@ -17,7 +19,7 @@ const QUESTIONS = [
     {
         name: 'template',
         type: 'list',
-        message: '¿Que tipo de proyecto quieres generad?',
+        message: '¿Que tipo de proyecto quieres generar?',
         choices: TEMPLATE_OPTIONS,
     },
     {
@@ -43,7 +45,8 @@ inquirer.prompt(QUESTIONS).then(respuestas => {
     const templatePath = path.join(__dirname, 'templates', template)
     const pathTarget = path.join(DIR_ACTUAL, proyecto)
 
-    createProject(pathTarget)
+    if (!createProject(pathTarget)) return
+    createDirectoriesFilesContent(templatePath, proyecto)
 })
 
 function createProject(projectPath) {
@@ -59,4 +62,29 @@ function createProject(projectPath) {
 
     fs.mkdirSync(projectPath)
     return true
+}
+
+function createDirectoriesFilesContent(templatePath, projectName) {
+    const listFileDirectories = fs.readdirSync(templatePath)
+
+    listFileDirectories.forEach(item => {
+        const originalPath = path.join(templatePath, item)
+
+        const stats = fs.statSync(originalPath)
+
+        const writePath = path.join(DIR_ACTUAL, projectName, item)
+
+        if (stats.isFile()) {
+            let contents = fs.readFileSync(originalPath, 'utf-8')
+
+            contents = render(contents, { projectName })
+            fs.writeFileSync(writePath, contents, 'utf-8')
+        } else if (stats.isDirectory()) {
+            fs.mkdirSync(writePath)
+            createDirectoriesFilesContent(
+                path.join(templatePath, item),
+                path.join(projectName, item)
+            )
+        }
+    })
 }
